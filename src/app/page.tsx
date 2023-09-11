@@ -74,45 +74,48 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="w-[800px] p-7 mb-[65px] mx-auto bg-slate-100 rounded-xl text-center sp:shrink-5 ">
+      <div className="w-full md:w-[800px] p-7 my-4 md:my-12 mx-auto bg-slate-100 rounded-xl text-center">
         <h1 className="font-bold text-xl">Any Queries?</h1>
-        <form className="flex flex-col my-3 gap-3" onSubmit={getDetail}>
-          <div className="flex flex-row gap-3">
+        <form className="flex flex-col my-3 gap-3">
+          <div className="flex flex-col md:flex-row gap-3">
             <select
-              className="p-2 rounded-lg font-semibold bg-slate-50 "
-              required>
+              className="p-2 rounded-lg font-semibold bg-slate-50 w-full md:w-[200px]"
+              required
+            >
               <option selected value="">
                 Team Name
               </option>
-              <option value="techera">Volvo</option>
-              <option value="brutal">Saab</option>
-              <option value="murder">Mercedes</option>
+              <option value="volvo">Volvo</option>
+              <option value="saab">Saab</option>
+              <option value="mercedes">Mercedes</option>
             </select>
             <input
               type="text"
               disabled
               placeholder="Team Leader Name"
-              className="p-2 rounded-lg w-[200px] font-semibold bg-slate-50"
+              className="p-2 rounded-lg w-full md:w-[200px] font-semibold bg-slate-50"
             />
             <input
               type="text"
               disabled
               placeholder="Venue"
-              className="p-2 rounded-lg w-[200px] font-semibold bg-slate-50"
+              className="p-2 rounded-lg w-full md:w-[200px] font-semibold bg-slate-50"
             />
             <button
               type="submit"
-              className="rounded-xl hover:bg-green-500 hover:scale-105 bg-green-600 text-white font-bold px-2 py-2 w-full">
+              className="rounded-xl hover:bg-green-500 hover:scale-105 bg-green-600 text-white font-bold px-2 py-2 w-full"
+            >
               Create
             </button>
           </div>
         </form>
-        <form className={`${queryEnabled ? "flex flex-col" : "hidden"} gap-4 `}>
+        <form className={`${queryEnabled ? "flex flex-col" : "hidden"} gap-4`}>
           <textarea
             className="w-full h-[100px] placeholder:text-gray-400 placeholder:font-semibold p-2"
-            placeholder="Enter your issue/query clearly!"></textarea>
-          <button className="rounded-xl hover:bg-green-500 mx-auto hover:scale-105 bg-green-600 text-white font-bold px-2 py-2 w-[200px] ">
-            Ask Query !
+            placeholder="Enter your issue/query clearly!"
+          ></textarea>
+          <button className="rounded-xl hover:bg-green-500 mx-auto hover:scale-105 bg-green-600 text-white font-bold px-2 py-2 w-full md:w-[200px] ">
+            Ask Query!
           </button>
         </form>
       </div>
