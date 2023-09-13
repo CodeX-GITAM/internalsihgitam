@@ -190,7 +190,7 @@ export default function Home() {
                 className="p-2 rounded-lg font-semibold bg-slate-50 w-full md:w-[200px]"
                 required>
                 <option value="" selected={selectedTeam === ""}>
-                  Team Name
+                  Desk Number
                 </option>
                 {teamData.map((team) => (
                   <option
