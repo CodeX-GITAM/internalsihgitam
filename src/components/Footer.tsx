@@ -7,13 +7,33 @@ import codex from "../assets/Developed By Codex.png";
 
 const Footer = () => {
   return (
-    <div className="pt-4 bg-slate-300 text-center shadow-lg">
+    <div className=" aboslute bottom-0 flex flex-col w-screen pt-4 pb-[20px] bg-slate-300 text-center gap-3 shadow-lg">
       <h1 className="font-bold">Organizing Partners</h1>
-      <div className="container mx-auto flex flex-wrap justify-center items-center gap-4 sm:gap-8">
-        <Image src={gitam} className="w-[100px] sm:w-[120px] h-[45px]" alt="Logo" />
-        <Image src={vdc} className="w-[100px] sm:w-[120px] h-[45px]" alt="Logo" />
-        <Image src={eclub} className="w-[100px] sm:w-[120px] h-[45px]" alt="Logo" />
-        <Image src={codex} className="w-[100px] sm:w-[120px] h-[50px]" alt="Logo" />
+      <div className=" mx-auto  flex flex-row flex-wrap justify-center items-center gap-8 ">
+        <a
+          href="https://www.gitam.edu/"
+          rel="noreferrer noopener"
+          target="_blank">
+          <Image src={gitam} className="w-auto h-[45px]" alt="Logo" />
+        </a>
+        <a
+          rel="noreferrer noopener"
+          target="_blank"
+          href="https://vdc.gitam.edu/">
+          <Image src={vdc} className="w-auto h-[45px]" alt="Logo" />
+        </a>
+        <a
+          rel="noreferrer noopener"
+          target="_blank"
+          href="https://vdc.gitam.edu/eclub/#portfolio">
+          <Image src={eclub} className="w-auto h-[45px]" alt="Logo" />
+        </a>
+        <a
+          rel="noreferrer noopener"
+          target="_blank"
+          href="https://codex-gitam.vercel.app/">
+          <Image src={codex} className="w-auto h-[50px]" alt="Logo" />
+        </a>
       </div>
     </div>
   );
