@@ -67,7 +67,7 @@ const Page = () => {
               <h1>Team : {team.deskNumber}</h1>
               <p>Team Name : {team.teamName}</p>
               <QRCode
-                value={`https://aarambh-server.onrender.com/review/${team.deskNumber}`}
+                value={`https://aarambh-vdc.vercel.app/review/${team.deskNumber}`}
                 removeQrCodeBehindLogo={true}
                 logoImage="https://media.licdn.com/dms/image/D560BAQHcSdGSRmh9tw/company-logo_100_100/0/1695033094018/codex_gitam_logo?e=1715817600&v=beta&t=5dX02S7TJacZNgINpulNyhO8vCvtKkKl0UVORTM7uiA"
                 enableCORS={true}
