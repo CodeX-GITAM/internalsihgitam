@@ -7,7 +7,7 @@ import codex from "../assets/Developed By Codex.png";
 
 const Footer = () => {
   return (
-    <div className=" aboslute bottom-0 flex flex-col w-screen pt-4 pb-[20px] bg-slate-300 text-center gap-3 shadow-lg">
+    <div className=" bottom-0 flex flex-col w-screen pt-4 pb-[20px] bg-slate-300 text-center gap-3 shadow-lg">
       <h1 className="font-bold">Organizing Partners</h1>
       <div className=" mx-auto  flex flex-row flex-wrap justify-center items-center gap-8 ">
         <a

@@ -7,9 +7,9 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Internal Smart India Hackathon 2023",
+  title: "Aarambh - Helpdesk",
   description:
-    "Smart India Hackathon is a nationwide initiative to provide students with a platform to solve some of the pressing problems we face in our daily lives, and thus inculcate a culture of product innovation and a mindset of problem-solving.",
+    "Aarambh 24 is an entrepreneurship open day event designed to ignite innovation and collaboration within the startup ecosystem. It offers a platform for aspiring entrepreneurs to network, pitch ideas, and engage like minded people fostering a dynamic environment for growth and knowledge exchange.",
 };
 
 export default function RootLayout({
@@ -19,10 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* set favicon */}
+        <link rel="icon" href="https://vdc.gitam.edu/main_ui/images/vdc_imgs/favicon.png" type="image/gif" sizes="16x16"></link>
+      </head>
       <body className="">
         <Navbar />
         {children}
-        <Footer />
       </body>
     </html>
   );

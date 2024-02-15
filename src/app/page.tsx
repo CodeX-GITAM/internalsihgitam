@@ -5,10 +5,20 @@ import axios from "axios";
 import banner from "../assets/banner.jpg";
 import Confetti from "@/components/Confetti";
 import Design from "@/components/Confetti";
+import Aarambh from "@/components/Aarambh";
+import Footer from "@/components/Footer";
+
+type TeamData = {
+  deskNumber: number;
+  teamName: string;
+  teamId: string;
+  rating: number;
+};
 
 export default function Home() {
-  const startDate = new Date("2023-09-14T10:00:00"); // Set your desired start date and time
-  const targetDate = new Date("2023-09-15T10:00:00"); // Set your desired target date and time
+  const [loading, setLoading] = useState(false);
+  const startDate = new Date("2024-09-14T10:00:00"); // Set your desired start date and time
+  const targetDate = new Date("2024 -02-18T10:00:00"); // Set your desired target date and time
 
   // Initialize state for the remaining time
   const [remainingTime, setRemainingTime] = useState<{
@@ -16,14 +26,18 @@ export default function Home() {
     minutes: number;
     seconds: number;
   }>({ hours: 23, minutes: 59, seconds: 59 });
+  const [issue, setIssue] = useState(""); // Store the issue
 
   // Initialize state for team data
-  const [teamData, setTeamData] = useState<any[]>([]);
-  const [selectedDesk, setSelectedDesk] = useState(""); // Store the selected desk
-  const [selectedTeam, setSelectedTeam] = useState(""); // Store the selected team
-  const [query, setQuery] = useState(""); // Store the query
-  const [contact, setContact] = useState(""); // Store the contact
-  const [category, setCategory] = useState(""); // Store the category
+  const [teamData, setTeamData] = useState([
+    {
+      deskNumber: 1,
+      teamName: "DUmmy DATA",
+      teamId: "1",
+      rating: 0,
+    },
+  ]);
+  const [selectedTeam, setSelectedTeam] = useState<TeamData>(); // Store the selected team data
 
   // Function to calculate the remaining time
   function calculateRemainingTime() {
@@ -45,10 +59,11 @@ export default function Home() {
   // Fetch team data only once and store it locally
   useEffect(() => {
     axios
-      .get(link1[Math.floor(Math.random() * link1.length)])
+      .get("https://aarambh-server.onrender.com/api/public/teams")
       .then((res) => {
         const data = res.data;
-        setTeamData(data);
+        console.log(data.data);
+        setTeamData(data.data);
       })
       .catch((err) => {
         console.error(err);
@@ -63,73 +78,47 @@ export default function Home() {
   }, []);
 
   // Handle desk selection
-  const handleDeskSelection = (selectedValue: string) => {
-    setSelectedDesk(selectedValue);
-    const matchingTeam = teamData.find(
-      (element: any) => element.desk === selectedValue
+  const selectionHandler = (e: any) => {
+    const deskNumber = Number(e.target.value);
+    const selectedTeam = teamData.find(
+      (team) => team.deskNumber === deskNumber
     );
-
-    if (matchingTeam) {
-      setTeamLead(matchingTeam.teamlead);
-      setSelectedTeam(matchingTeam.team); // Update selected team based on desk
-      setContact(matchingTeam.contact);
-      setCategory(matchingTeam.category);
-    } else {
-      setSelectedTeam("");
-      setTeamLead("");
-      setContact("");
-      setCategory("");
-    }
+    console.log(selectedTeam);
+    setSelectedTeam(
+      selectedTeam as {
+        deskNumber: number;
+        teamName: string;
+        teamId: string;
+        rating: number;
+      }
+    );
   };
-
-  const createQuery: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const postQuery = async (e: any) => {
     e.preventDefault();
-    axios
-      .post(link2[Math.floor(Math.random() * link2.length)], {
-        team: selectedTeam,
-        desk: selectedDesk,
-        teamlead: teamLead,
-        query: query,
-        assignee: "",
-        contact: contact,
-        category: category,
-        status: "open",
-      })
+    setLoading(true);
+    try{
+ await axios
+      .post(
+        `https://aarambh-server.onrender.com/api/public/query/${selectedTeam?.deskNumber}`,
+        {
+          query: issue,
+        }
+      )
       .then((res) => {
-        alert("Query submitted successfully!");
-        setSelectedTeam("");
-        setQuery("");
-        setTeamLead("");
-        setSelectedDesk("");
-        setContact("");
-        setCategory("");
+        console.log(res.data);
+        alert("Query posted successfully!");
+        window.location.reload();
       })
       .catch((err) => {
         console.error(err);
-      });
+        alert(err.response?.data.message);
+      });} catch (error) {
+      console.error(error);
+    }
+    finally {
+      setLoading(false);
+    }
   };
-
-  const [teamLead, setTeamLead] = useState("");
-  const [venue, setVenue] = useState("");
-  const link1 = [
-    "https://sheet.best/api/sheets/7bc4be1e-a103-4dc4-a969-6629661ef83f",
-    "https://sheet.best/api/sheets/4e5bf062-7e75-4985-8006-d58cc2af292e",
-    "https://sheet.best/api/sheets/b5547c0a-5987-4478-a87c-284d33c7e14e",
-    "https://sheet.best/api/sheets/41206ee3-f75d-4d3b-a51e-9b5c45429f11",
-    "https://sheet.best/api/sheets/1dabd339-a647-494b-8ea3-18c72f77a7ee",
-    "https://sheet.best/api/sheets/5778462c-8879-4c81-a937-a039b528cf5b",
-    "https://sheet.best/api/sheets/fa2a4a32-cb84-49c8-8291-8eed19966557",
-  ];
-  const link2 = [
-    "https://sheet.best/api/sheets/6678af82-939f-4bae-acb4-8f1584859b38",
-    "https://sheet.best/api/sheets/3657565b-9a7d-44cd-9240-598d1e9db443",
-    "https://sheet.best/api/sheets/b88990e6-6751-4caa-9108-70b425c82463",
-    "https://sheet.best/api/sheets/5e6a99a3-150b-4d7d-8dc3-c2a758237618",
-    "https://sheet.best/api/sheets/387009b9-60ab-48d8-b5c8-84d8842e6c58",
-    "https://sheet.best/api/sheets/06a083ab-198a-4073-b0c1-4f98c589457a",
-    "https://sheet.best/api/sheets/36a240f3-2005-4f27-aa3b-879f4a7b5fb5",
-    "https://sheet.best/api/sheets/414df6a9-0a7e-4bc9-a82b-630834bdc083",
-  ];
 
   return (
     <main className="min-h-screen">
@@ -137,7 +126,7 @@ export default function Home() {
         <Image
           src={banner}
           alt="banner"
-          className="absolute inset-0 w-screen h-[350px] "
+          className=" absolute inset-0 w-screen h-[350px] "
         />
         <div className="absolute inset-0 flex justify-center items-center">
           {remainingTime.hours === 0 &&
@@ -146,7 +135,7 @@ export default function Home() {
             <div className="flex flex-col text-center">
               <Design />
               <h1 className="font-bold text-white text- text-8xl font-sans">
-                TIME OVER!!
+                EVENT OVER!!
               </h1>
               <h1 className="font-bold text-white">
                 Congratulations on Completion!!!
@@ -154,18 +143,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="flex flex-row gap-3 sp:w-50">
-              <div className="bg-slate-400 w-[100px] h-[150px] bg-opacity-75 flex flex-col justify-center space-y-3 items-center">
-                <h1 className="text-4xl font-bold">{remainingTime.hours}</h1>
-                <p className="font-semibold">hours</p>
-              </div>
-              <div className="bg-slate-400 w-[100px] h-[150px] bg-opacity-75 flex flex-col justify-center space-y-3 items-center">
-                <h1 className="text-4xl font-bold">{remainingTime.minutes}</h1>
-                <p className="font-semibold">minutes</p>
-              </div>
-              <div className="bg-slate-400 w-[100px] h-[150px] bg-opacity-75 flex flex-col justify-center space-y-3 items-center">
-                <h1 className="text-4xl font-bold">{remainingTime.seconds}</h1>
-                <p className="font-semibold">Seconds</p>
-              </div>
+              <Aarambh />
             </div>
           )}
         </div>
@@ -179,56 +157,44 @@ export default function Home() {
           </h1>
         </div>
       ) : (
-        <div className="w-full md:w-[800px] p-7 my-2 md:my-12 mx-auto bg-slate-100 rounded-xl text-center">
+        <div className=" w-full md:w-[800px] p-7 my-2 md:my-12 mx-auto bg-slate-100 rounded-xl text-center">
           <h1 className="font-bold text-xl">Any Queries?</h1>
-          <form className="flex flex-col my-3 gap-3" onSubmit={createQuery}>
+          <form className="flex flex-col my-3 gap-3">
             <div className="flex flex-col md:flex-row gap-3">
               <select
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  handleDeskSelection(e.target.value)
-                }
+                onChange={selectionHandler}
                 className="p-2 rounded-lg font-semibold bg-slate-50 w-full md:w-[200px]"
                 required>
-                <option value="" selected={selectedTeam === ""}>
-                  Desk Number
-                </option>
+                <option>Desk Number</option>
                 {teamData.map((team) => (
-                  <option
-                    key={team.desk}
-                    value={team.desk}
-                    selected={selectedTeam === team.desk}>
-                    {team.desk}
-                  </option>
+                  <option key={team.deskNumber}>{team.deskNumber}</option>
                 ))}
               </select>
               <input
                 type="text"
-                value={teamLead}
-                disabled
-                placeholder="Team Leader Name"
-                className="p-2 rounded-lg w-full md:w-[200px] font-semibold bg-slate-50"
-              />
-              <input
-                type="text"
-                disabled
-                value={selectedTeam}
+                readOnly
+                value={selectedTeam?.teamName}
                 placeholder="Team Name"
                 className="p-2 rounded-lg w-full md:w-[200px] font-semibold bg-slate-50"
               />
             </div>
             <textarea
-              value={query}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setQuery(e.target.value)
-              }
+              required
               className="w-full h-[100px] placeholder:text-gray-400 placeholder:font-semibold p-2"
-              placeholder="Enter your issue/query clearly!"></textarea>
-            <button className="rounded-xl hover:bg-green-500 mx-auto hover:scale-105 bg-green-600 text-white font-bold px-2 py-2 w-full md:w-[200px] ">
+              placeholder="Enter your issue shortly!"
+              onChange={(e: any) => {
+                setIssue(e.target.value);
+              }}></textarea>
+            <button
+              type="submit"
+              onClick={postQuery}
+              className="rounded-xl hover:bg-green-500 mx-auto hover:scale-105 bg-green-600 text-white font-bold px-2 py-2 w-full md:w-[200px] ">
               Ask Query!
             </button>
           </form>
         </div>
       )}
+      <Footer />
     </main>
   );
 }
