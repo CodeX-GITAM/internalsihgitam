@@ -10,7 +10,7 @@ export default function Navbar() {
           <Image src={vdc} className="m-2 w-auto h-[45px]" alt="Logo" />
         </a>
       </div>
-      <div className="flex items-center justify-center">
+      <div className="md:flex hidden items-center justify-center">
         <a href="https://www.sih.gov.in/sih2024PS" target="_blank">
           <span className="items-center justify-center">
             <p className="text-center font-bold">

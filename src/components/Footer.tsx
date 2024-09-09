@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import vdc from "../assets/red_vdc.png";
-import gitam from "../assets/gitam.jpg";
+import gitam from "../assets/gitam.png";
 import eclub from "../assets/transeclublogo.png";
 import codex from "../assets/Developed By Codex.png";
 
@@ -28,11 +28,9 @@ const Footer = () => {
           href="https://vdc.gitam.edu/eclub/#portfolio">
           <Image src={eclub} className="w-auto h-[45px]" alt="Logo" />
         </a>
-        <a
-          rel="noreferrer noopener"
-          target="_blank"
-          href="https://codex-gitam.vercel.app/">
+        <a rel="noreferrer noopener" target="_blank" href="/contributor">
           <Image src={codex} className="w-auto h-[50px]" alt="Logo" />
+          <p className="text-xs font-mono">How to build?</p>
         </a>
       </div>
     </div>

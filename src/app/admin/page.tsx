@@ -2,323 +2,155 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import Aarambh from "@/components/Aarambh";
 
-const Page = () => {
-  type tokenResDTO = {
-    accessToken: string;
-    refreshToken: string;
+type QueryType = {
+  assignedTo: null | string;
+  query: string;
+  queryId: string;
+  solved: boolean;
+  teamId: {
+    deskNumber: number;
+    teamName: string;
+    teamId: string;
+    rating: number;
   };
-  const [newTeamDeskNumber, setNewTeamDeskNumber] = useState(0);
+};
+
+const Page = () => {
   const [loading, setLoading] = useState(false);
-  const [newTeamName, setNewTeamName] = useState("");
-  const router = useRouter();
-  const [updatedTeamName, setUpdatedTeamName] = useState("");
-  const [teamData, setTeamData] = useState([
+  const [solvedBy, setSolvedBy] = useState("");
+  const [queries, setQueries] = useState([
     {
-      teamId: "",
-      deskNumber: 0,
-      teamName: "",
-      rating: 0,
-    },
-  ]);
-  const [ratingData, setRatingData] = useState([
-    {
-      ratingId: "",
-      rating: 0,
-      team: {
-        teamId: "",
+      assignedTo: null,
+      query: "",
+      queryId: "",
+      solved: false,
+      teamId: {
         deskNumber: 0,
         teamName: "",
+        teamId: "",
         rating: 0,
       },
-      ratingBy: "",
-      createdOn: "",
     },
-  ]);
-  const addTeam = async (e: any) => {
-    setLoading(true);
-    e.preventDefault();
+  ] as QueryType[]);
+  // Store the queries
 
-    const token = Cookies.get("token");
-    try {
-      await axios
-        .post(
-          "https://aarambh-server.onrender.com/api/admin/team",
-          {
-            deskNumber: newTeamDeskNumber,
-            teamName: newTeamName,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-          alert("Team added successfully");
-          window.location.reload();
-        })
-        .catch((err) => {
-          alert(err.response.data.message);
-          if (err.response.status === 401) {
-            Cookies.remove("token");
-            router.push("/login");
-          }
-        });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
   useEffect(() => {
     axios
-      .get("https://aarambh-server.onrender.com/api/public/teams")
+      .get("https://aarambh-server.onrender.com/api/admin/queries", {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      })
       .then((res) => {
-        const data = res.data?.["data"];
-        setTeamData(data);
-        console.log(teamData);
+        console.log(res.data.data);
+        setQueries(res.data.data);
+        queries.sort((a, b) => {
+          if (a.solved && !b.solved) {
+            return -1;
+          } else if (!a.solved && b.solved) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
       })
       .catch((err) => {
         console.error(err);
+        if (err.response?.status === 401) {
+          alert("Unauthorized");
+          window.location.replace("/login");
+        }
       });
-    const token = Cookies.get("token");
   }, []);
-
   return (
-    <div className="min-h-screen flex flex-col gap-[30px] items-center">
+    <div className="w-screen min-h-screen flex-col flex text-center items-center  mt-[100px]">
       {loading && (
         <div className="w-screen h-screen bg-white absolute z-50">
           <Aarambh />
         </div>
       )}
-      <a
-        href="/admin/issues"
-        className="text-center text-blue-500 mt-[100px] font-bold">
-        issues
+      <a href="/admin/team" className="text-blue-600 underline">
+        Team Data
       </a>
-      <div className="bg-slate-100  w-[300px] p-5 items-center text-center gap-3 flex flex-col">
-        <h1 className="font-bold">add new team</h1>
-        <form>
-          <input
-            type="number"
-            className="w-[100px]"
-            placeholder="Desk No:"
-            onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setNewTeamDeskNumber(parseInt(e.target.value));
-            }}
-            autoComplete="new-password"
-            required
-          />
-          <input
-            type="text"
-            className="w-[200px]"
-            placeholder="Team Name"
-            autoComplete="new-password"
-            onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setNewTeamName(e.target.value);
-            }}
-            required
-          />
-          <button
-            type="submit"
-            onClick={addTeam}
-            className="bg-green-500 text-white font-bold py-1 px-4 rounded-lg">
-            Add
-          </button>
-        </form>
-      </div>
-      <div className="flex md:flex-row flex-col gap-[50px] items-start">
-        <div className="bg-slate-100  mt-[100px]">
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th>Desk</th>
-                <th>Team</th>
-                <th>update</th>
-                <th>delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teamData.map((team, index) => {
-                const updateTeam = async () => {
-                  if (updatedTeamName === "")
-                    return alert("Team name cannot be empty");
-                  const token = Cookies.get("token");
-                  setLoading(true);
-                  try {
-                    await axios
-                      .put(
-                        `https://aarambh-server.onrender.com/api/admin/team/${team.deskNumber}`,
-                        {
-                          teamName: updatedTeamName,
-                          deskNumber: team.deskNumber,
-                        },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${token}`,
-                          },
-                        }
-                      )
-                      .then((res) => {
-                        console.log(res);
-                        alert("Team updated successfully");
-                        window.location.reload();
-                      })
-                      .catch((err) => {
-                        alert(err.response.data.message);
-                        if (err.response.status === 401) {
-                          Cookies.remove("token");
-                          router.push("/login");
-                        }
-                      });
-                  } catch (err) {
-                    console.error(err);
-                  } finally {
-                    setLoading(false);
+      <h1 className="text-2xl font-bold ">Issues</h1>
+      <div className="grid gap-2 grid-cols-1 md:grid-cols-3">
+        {queries.map((query: QueryType, key) => {
+          const solvedQuery = async () => {
+            if (solvedBy === "") {
+              alert("Solved by is required!");
+              return;
+            }
+            setLoading(true);
+            try {
+              await axios
+                .put(
+                  `https://aarambh-server.onrender.com/api/admin/query/resolve/${query.queryId}`,
+                  {
+                    closedBy: solvedBy,
+                  },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${Cookies.get("token")}`,
+                    },
                   }
-                };
-                const deleteTeam = async () => {
-                  const token = Cookies.get("token");
-                  setLoading(true);
-                  try {
-                    await axios
-                      .delete(
-                        `https://aarambh-server.onrender.com/api/admin/team/${team.deskNumber}`,
-                        {
-                          headers: {
-                            Authorization: `Bearer ${token}`,
-                          },
-                        }
-                      )
-                      .then((res) => {
-                        console.log(res);
-                        alert("Team deleted successfully");
-                        window.location.reload();
-                      })
-                      .catch((err) => {
-                        alert(err.response.data.message);
-                        if (err.response.status === 401) {
-                          Cookies.remove("token");
-                          router.push("/login");
-                        }
-                      });
-                  } catch (err) {
-                    console.error(err);
-                  } finally {
-                    setLoading(false);
-                  }
-                };
-                return (
-                  <tr key={index}>
-                    <td>{team.deskNumber}</td>
-                    <td>
-                      <input
-                        className="w-[150px]"
-                        type="text"
-                        defaultValue={team.teamName}
-                        onChange={(e: any) => {
-                          setUpdatedTeamName(e.target.value);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        onClick={updateTeam}
-                        className="bg-blue-500 text-white p-1 rounded-md">
-                        Update
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        onClick={deleteTeam}
-                        className="bg-red-500 text-white p-1 rounded-md">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {/* <div className="bg-slate-100 mt-[100px]">
-          <div className="bg-slate-100">
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>Desk</th>
-                  <th>Name</th>
-                  <th>rating</th>
-                  <th>delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ratingData.map((rating, index) => {
-                  const deleteRating = async () => {
-                    const token = Cookies.get("token");
-                    setLoading(true);
-                    try{
-                    await axios
-                      .delete(
-                        `https://aarambh-server.onrender.com/api/admin/rating/${rating.ratingId}`,
-                        {
-                          headers: {
-                            Authorization: `Bearer ${token}`,
-                          },
-                        }
-                      )
-                      .then((res) => {
-                        console.log(res);
-                        alert("Rating deleted successfully");
-                        window.location.reload();
-                      })
-                      .catch((err) => {
-                        alert(err.response.data.message);
-                        if (err.response.status === 401) {
-                          Cookies.remove("token");
-                          router.push("/login");
-                        }
-                      });}
-                      catch(err){
-                        console.error(err);
-                      }
-                      finally{
-                        setLoading(false);
-                      }
-                  };
-                  return (
-                    <tr key={index} className="border-b-2">
-                      <td align="center" className="p-2">
-                        {rating.createdOn}
-                      </td>
-                      <td align="center" className="p-2">
-                        {rating.team.deskNumber}
-                      </td>
-                      <td align="center" className="p-2">
-                        {rating.ratingBy}
-                      </td>
-                      <td align="center" className="p-2">
-                        {rating.rating}
-                      </td>
-                      <td align="center" className="p-2">
-                        <button
-                          onClick={deleteRating}
-                          className="bg-red-500 text-white p-1 rounded-md">
-                          delete
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div> */}
+                )
+                .then((res) => {
+                  console.log(res.data);
+                  alert("Query solved successfully!");
+                  window.location.reload();
+                })
+                .catch((err) => {
+                  console.error(err);
+                  alert(err.response?.data.message);
+                });
+            } catch (err) {
+              console.error(err);
+            } finally {
+              setLoading(false);
+            }
+          };
+          return (
+            <div
+              key={key}
+              className="w-[310px] bg-slate-100 flex gap-2 flex-col p-5">
+              <h1>Desk Number</h1>
+              <p>{query.teamId.deskNumber}</p>
+              <h1>Team Name</h1>
+              <p>{query.teamId.teamName}</p>
+              <h1>Issue</h1>
+              <p>{query.query}</p>
+              {!query.solved ? (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Solved By"
+                    required
+                    onChange={(e: any) => {
+                      setSolvedBy(e.target.value);
+                    }}
+                  />
+                  <button onClick={solvedQuery} className="bg-green-600">
+                    Solve
+                  </button>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Solved By"
+                    defaultValue={query.assignedTo?.toString()}
+                    readOnly
+                  />
+                  <button disabled className="bg-green-600">
+                    Solved
+                  </button>
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

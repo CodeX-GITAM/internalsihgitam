@@ -21,11 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* set favicon */}
-        <link
-          rel="icon"
-          href="https://vdc.gitam.edu/main_ui/images/vdc_imgs/favicon.png"
-          type="image/gif"
-          sizes="16x16"></link>
+        <link rel="icon" href="/cdx.png" type="image/gif" sizes="16x16"></link>
+        <link href="https://fonts.cdnfonts.com/css/samarkan" rel="stylesheet"></link>
+
       </head>
       <body className="">
         <Navbar />
