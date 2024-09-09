@@ -86,23 +86,6 @@ const Page = () => {
         console.error(err);
       });
     const token = Cookies.get("token");
-    axios
-      .get("https://aarambh-server.onrender.com/api/admin/ratings", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        const data = res.data?.["data"];
-        setRatingData(data);
-      })
-      .catch((err) => {
-        console.error(err);
-        if (err.response.status === 401) {
-          Cookies.remove("token");
-          router.push("/login");
-        }
-      });
   }, []);
 
   return (
@@ -262,7 +245,7 @@ const Page = () => {
             </tbody>
           </table>
         </div>
-        <div className="bg-slate-100 mt-[100px]">
+        {/* <div className="bg-slate-100 mt-[100px]">
           <div className="bg-slate-100">
             <table className="w-full">
               <thead>
@@ -335,7 +318,7 @@ const Page = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

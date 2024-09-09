@@ -1,7 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@font-face {
+  font-family: "samarkan";
+  src: url("/fonts/samarkan.ttf") format("truetype");
+}
 .animate-charcter {
   justify-content: center;
   align-items: center;
@@ -9,10 +12,10 @@
   display: flex;
   background-image: linear-gradient(
     -225deg,
-    #981f2b 0%,
-    #624223 39%,
-    #FE9923 57%,
-    #c7aa54 100%
+    #eb8211 0%,
+    #f6f6f6 39%,
+    #25cd0f 57%,
+    #5461c7 100%
   );
   background-size: auto auto;
   background-clip: border-box;

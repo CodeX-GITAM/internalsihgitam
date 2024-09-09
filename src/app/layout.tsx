@@ -7,9 +7,9 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Aarambh - Helpdesk",
+  title: "SIH Internal - Helpdesk",
   description:
-    "Aarambh 24 is an entrepreneurship open day event designed to ignite innovation and collaboration within the startup ecosystem. It offers a platform for aspiring entrepreneurs to network, pitch ideas, and engage like minded people fostering a dynamic environment for growth and knowledge exchange.",
+    "Smart India Hackathon 2024 - Internal Helpdesk, It is a platform for the participants to get their queries resolved throughout the hackathon. It is a one-stop solution for all the queries related to the hackathon. GITA VDC is the host of the Smart India Hackathon 2024(Internal) at GITAM(Deemed to be University) Bengaluru.",
 };
 
 export default function RootLayout({
@@ -21,7 +21,11 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* set favicon */}
-        <link rel="icon" href="https://vdc.gitam.edu/main_ui/images/vdc_imgs/favicon.png" type="image/gif" sizes="16x16"></link>
+        <link
+          rel="icon"
+          href="https://vdc.gitam.edu/main_ui/images/vdc_imgs/favicon.png"
+          type="image/gif"
+          sizes="16x16"></link>
       </head>
       <body className="">
         <Navbar />

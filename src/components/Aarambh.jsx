@@ -7,7 +7,7 @@ const Aarambh = () => {
         className="animate-charcter scale-150 text-5xl 2xl:text-6xl sp:text-xl se:text-2xl si:text-3xl sr:text-3xl tabhor:text-4xl
         flex items-center justify-center">
         {" "}
-        aarambh
+        #sih
       </h3>
     </div>
   );
