@@ -103,53 +103,58 @@ export default function Home() {
         />
         <div className="relative z-10 ">
           <CountdownTimer
-            targetDate="2024-10-01T00:00:00"
+            primaryTargetDate="2024-09-10T10:00:00"
+            secondaryTargetDate="2024-09-11T10:00:00"
             over={hackathonOver}
             setOver={setHackathonOver}
           />
         </div>
       </div>
-      <div className=" w-full md:w-[800px] p-7 my-2 md:my-12 mx-auto bg-slate-100 rounded-xl text-center">
-        <h1 className="font-bold text-xl">Any Queries?</h1>
-        <form className="flex flex-col my-3 gap-3">
-          <div className="flex flex-col md:flex-row gap-3">
-            <select
-              onChange={selectionHandler}
-              className="p-2 rounded-lg font-semibold bg-slate-50 w-full md:w-[200px]"
-              required>
-              <option>Desk Number</option>
-              {teamData.map((team) => (
-                <option key={team.deskNumber}>{team.deskNumber}</option>
-              ))}
-            </select>
-            <input
-              type="text"
-              readOnly
-              value={selectedTeam?.teamName}
-              placeholder="Team Name"
-              className="p-2 rounded-lg w-full md:w-[200px] font-semibold bg-slate-50"
-            />
-          </div>
-          {selectedTeam && (
-            <>
-              <textarea
-                required
-                className="w-full h-[100px] placeholder:text-gray-400 placeholder:font-semibold p-2"
-                placeholder="Enter your issue shortly!"
-                onChange={(e: any) => {
-                  setIssue(e.target.value);
-                }}></textarea>
-              <button
-                type="submit"
-                onClick={postQuery}
-                disabled={loading}
-                className="rounded-xl hover:bg-green-500 mx-auto hover:scale-105 bg-green-600 text-white font-bold px-2 py-2 w-full md:w-[200px] ">
-                Ask Query!
-              </button>
-            </>
-          )}
-        </form>
-      </div>
+      {hackathonOver ? (
+        <Confetti />
+      ) : (
+        <div className=" w-full md:w-[800px] p-7 my-2 md:my-12 mx-auto bg-slate-100 rounded-xl text-center">
+          <h1 className="font-bold text-xl">Any Queries?</h1>
+          <form className="flex flex-col my-3 gap-3">
+            <div className="flex flex-col md:flex-row gap-3">
+              <select
+                onChange={selectionHandler}
+                className="p-2 rounded-lg font-semibold bg-slate-50 w-full md:w-[200px]"
+                required>
+                <option>Desk Number</option>
+                {teamData.map((team) => (
+                  <option key={team.deskNumber}>{team.deskNumber}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                readOnly
+                value={selectedTeam?.teamName}
+                placeholder="Team Name"
+                className="p-2 rounded-lg w-full md:w-[200px] font-semibold bg-slate-50"
+              />
+            </div>
+            {selectedTeam && (
+              <>
+                <textarea
+                  required
+                  className="w-full h-[100px] placeholder:text-gray-400 placeholder:font-semibold p-2"
+                  placeholder="Enter your issue shortly!"
+                  onChange={(e: any) => {
+                    setIssue(e.target.value);
+                  }}></textarea>
+                <button
+                  type="submit"
+                  onClick={postQuery}
+                  disabled={loading}
+                  className="rounded-xl hover:bg-green-500 mx-auto hover:scale-105 bg-green-600 text-white font-bold px-2 py-2 w-full md:w-[200px] ">
+                  Ask Query!
+                </button>
+              </>
+            )}
+          </form>
+        </div>
+      )}
 
       <Footer />
     </main>

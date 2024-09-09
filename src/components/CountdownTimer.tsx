@@ -10,62 +10,72 @@ interface TimeLeft {
 }
 
 interface CountdownTimerProps {
-  targetDate: string; // Expecting a string for the date (ISO format)
+  primaryTargetDate: string;
+  secondaryTargetDate: string;
   over: boolean;
   setOver: (over: boolean) => void;
 }
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({
-  targetDate,
+  primaryTargetDate,
+  secondaryTargetDate,
   over,
   setOver,
 }) => {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null); // Set initial state to null
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
   const [textToShow, setTextToShow] = useState<string>("Welcome!");
   const [isInitialCountdownOver, setIsInitialCountdownOver] =
     useState<boolean>(false);
-  const [isMounted, setIsMounted] = useState(false); // Track component mounting
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // Component is now mounted
+    setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!isMounted) return; // Do nothing if component is not mounted
+    if (!isMounted) return;
 
     const timer = setInterval(() => {
       const now = new Date();
-      const timeLeftToTarget = calculateTimeLeft(targetDate);
+      const primaryTimeLeft = calculateTimeLeft(primaryTargetDate);
+      const secondaryTimeLeft = calculateTimeLeft(secondaryTargetDate);
 
-      if (timeLeftToTarget.total <= 0 && !isInitialCountdownOver) {
-        // Hackathon started
+      if (primaryTimeLeft.total <= 0 && !isInitialCountdownOver) {
         setIsInitialCountdownOver(true);
         setTextToShow("Hackathon has started!");
       }
 
       if (!isInitialCountdownOver) {
         setTextToShow("Time left for the hackathon to start:");
-        setTimeLeft(timeLeftToTarget);
+        setTimeLeft(primaryTimeLeft);
       } else {
-        const timeLeftFor24HourCycle = calculate24HourCountdown(now);
-
-        if (timeLeftFor24HourCycle.total <= 0) {
-          // If 24 hours is over, end the hackathon
+        if (secondaryTimeLeft.total <= 0) {
+          // Both target dates have passed
           setTextToShow("Hackathon Got Over");
           setOver(true);
-          clearInterval(timer); // Stop the interval once it's over
+          setTimeLeft({
+            total: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+          });
+          clearInterval(timer);
         } else {
           setTextToShow("Hackathon ends in:");
-          setTimeLeft(timeLeftFor24HourCycle);
+          setTimeLeft(secondaryTimeLeft);
         }
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate, isInitialCountdownOver, isMounted]);
+  }, [
+    primaryTargetDate,
+    secondaryTargetDate,
+    isInitialCountdownOver,
+    isMounted,
+  ]);
 
   if (!isMounted || !timeLeft) {
-    // Prevent server-side rendering and display nothing initially
     return <Aarambh />;
   }
 
@@ -114,7 +124,6 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
 const calculateTimeLeft = (targetDate: string): TimeLeft => {
   const now = new Date();
   const difference = new Date(targetDate).getTime() - now.getTime();
-
   let timeLeft: TimeLeft = {
     total: difference,
     hours: 0,
@@ -132,19 +141,6 @@ const calculateTimeLeft = (targetDate: string): TimeLeft => {
   }
 
   return timeLeft;
-};
-
-// Function to calculate 24-hour countdown
-const calculate24HourCountdown = (now: Date): TimeLeft => {
-  const target24HourEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-  const difference = target24HourEnd.getTime() - now.getTime();
-
-  return {
-    total: difference,
-    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((difference / 1000 / 60) % 60),
-    seconds: Math.floor((difference / 1000) % 60),
-  };
 };
 
 export default CountdownTimer;
