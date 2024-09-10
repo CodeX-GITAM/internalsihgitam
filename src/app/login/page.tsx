@@ -39,12 +39,11 @@ const Page = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center">
-      {loading && (
-        <div className="w-screen h-screen bg-white absolute z-50">
+    loading?
+        (<div className="w-screen h-screen bg-white absolute z-50">
           <Aarambh />
-        </div>
-      )}
+        </div>):(
+          <div className="h-screen w-screen flex items-center justify-center">
       <form
         className="bg-slate-100 w-[300px] h-[300px] rounded-lg flex flex-col p-5 text-center gap-5"
         onSubmit={handleLoginClick}>
@@ -80,6 +79,7 @@ const Page = () => {
         </button>
       </form>
     </div>
+        )
   );
 };
 

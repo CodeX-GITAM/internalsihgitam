@@ -45,7 +45,7 @@ const ContributorsPage = () => {
               <p className="text-sm text-gray-600">
                 Contact:{" "}
                 <a
-                  href="www.punithdandluri.me"
+                  href="https://www.punithdandluri.me"
                   className="text-blue-500 underline">
                   portfolio
                 </a>
