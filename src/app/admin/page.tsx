@@ -19,6 +19,8 @@ type QueryType = {
 
 const Page = () => {
   const [loading, setLoading] = useState(false);
+  const [solvedQuery, setSolvedQuery] = useState([]);
+  const [unsolvedQuery, setUnsolvedQuery] = useState([]);
   const [solvedBy, setSolvedBy] = useState("");
   const [queries, setQueries] = useState([
     {
@@ -37,35 +39,37 @@ const Page = () => {
   // Store the queries
 
   useEffect(() => {
-    axios
-      .get("https://aarambh-server.onrender.com/api/admin/queries", {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("token")}`,
-        },
-      })
-      .then((res) => {
-        console.log(res.data.data);
-        setQueries(res.data.data);
-        queries.sort((a, b) => {
-          if (a.solved && !b.solved) {
-            return -1;
-          } else if (!a.solved && b.solved) {
-            return 1;
-          } else {
-            return 0;
+    const fetchQueries = async () => {
+      setLoading(true);
+      await axios
+        .get("https://aarambh-server.onrender.com/api/admin/queries", {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        })
+        .then((res) => {
+          setQueries(res.data.data);
+          let solved = res.data.data.filter((query: QueryType) => query.solved);
+          let unsolved = res.data.data.filter(
+            (query: QueryType) => !query.solved
+          );
+          setSolvedQuery(solved);
+          setUnsolvedQuery(unsolved);
+        })
+        .catch((err) => {
+          console.error(err);
+          if (err.response?.status === 401) {
+            alert("Unauthorized");
+            window.location.replace("/login");
           }
         });
-      })
-      .catch((err) => {
-        console.error(err);
-        if (err.response?.status === 401) {
-          alert("Unauthorized");
-          window.location.replace("/login");
-        }
-      });
+    };
+    fetchQueries();
+    console.log(queries);
+    setLoading(false);
   }, []);
   return (
-    <div className="w-screen min-h-screen flex-col flex text-center items-center  mt-[100px]">
+    <div className="w-screen min-h-screen overflow-hidden flex-col flex text-center items-center  mt-[100px]">
       {loading && (
         <div className="w-screen h-screen bg-white absolute z-50">
           <Aarambh />
@@ -74,9 +78,12 @@ const Page = () => {
       <a href="/admin/team" className="text-blue-600 underline">
         Team Data
       </a>
-      <h1 className="text-2xl font-bold ">Issues</h1>
+      <h1 className="text-2xl text-center font-bold ">Issues</h1>
+      {queries.length >1 ? (
+        <>
+        <h1 className="text-xl font-bold">Unsolved</h1>
       <div className="grid gap-2 grid-cols-1 md:grid-cols-3">
-        {queries.map((query: QueryType, key) => {
+        {unsolvedQuery.map((query: QueryType, key) => {
           const solvedQuery = async () => {
             if (solvedBy === "") {
               alert("Solved by is required!");
@@ -152,6 +159,53 @@ const Page = () => {
           );
         })}
       </div>
+      <div>
+        <h1 className="text-xl font-bold">Solved</h1>
+        {/* High UI table for solved queries */}
+        <div className="w-full overflow-x-scroll">
+          <table className="w-full text-left border-collapse shadow-lg min-w-[600px]">
+            <thead className="bg-gradient-to-r from-blue-500 to-purple-500 text-white uppercase">
+              <tr>
+                <th className="px-6 py-3 border-b border-gray-200">
+                  Desk Number
+                </th>
+                <th className="px-6 py-3 border-b border-gray-200">
+                  Team Name
+                </th>
+                <th className="px-6 py-3 border-b border-gray-200">Issue</th>
+                <th className="px-6 py-3 border-b border-gray-200">
+                  Solved By
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {solvedQuery.map((query: QueryType, key) => {
+                return (
+                  <tr
+                    key={key}
+                    className="odd:bg-white even:bg-gray-100 hover:bg-blue-100 transition-colors duration-300">
+                    <td className="px-6 py-4 border-b border-gray-200">
+                      {query.teamId.deskNumber}
+                    </td>
+                    <td className="px-6 py-4 border-b border-gray-200">
+                      {query.teamId.teamName}
+                    </td>
+                    <td className="px-6 py-4 border-b border-gray-200">
+                      {query.query}
+                    </td>
+                    <td className="px-6 py-4 border-b border-gray-200">
+                      {query.assignedTo}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div></>
+      ):(
+        <Aarambh />
+      )}
     </div>
   );
 };

@@ -75,17 +75,25 @@ const Page = () => {
     }
   };
   useEffect(() => {
-    axios
-      .get("https://aarambh-server.onrender.com/api/public/teams")
-      .then((res) => {
-        const data = res.data?.["data"];
-        setTeamData(data);
-        console.log(teamData);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    const token = Cookies.get("token");
+    const fetchdata = async () => {
+      setLoading(true);
+      await axios
+        .get("https://aarambh-server.onrender.com/api/public/teams")
+        .then((res) => {
+          const data = res.data?.["data"];
+          const sortedData = data.sort(
+            (a: any, b: any) => a.deskNumber - b.deskNumber
+          );
+          setTeamData(sortedData);
+          console.log(teamData);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      const token = Cookies.get("token");
+    };
+    fetchdata();
+    setLoading(false);
   }, []);
 
   return (
@@ -131,121 +139,122 @@ const Page = () => {
           </button>
         </form>
       </div>
-      <div className="flex md:flex-row flex-col gap-[50px] items-start">
-        <div className="bg-slate-100  mt-[100px]">
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th>Desk</th>
-                <th>Team</th>
-                <th>update</th>
-                <th>delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teamData.map((team, index) => {
-                const updateTeam = async () => {
-                  if (updatedTeamName === "")
-                    return alert("Team name cannot be empty");
-                  const token = Cookies.get("token");
-                  setLoading(true);
-                  try {
-                    await axios
-                      .put(
-                        `https://aarambh-server.onrender.com/api/admin/team/${team.deskNumber}`,
-                        {
-                          teamName: updatedTeamName,
-                          deskNumber: team.deskNumber,
-                        },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${token}`,
+      {teamData.length > 1 ? (
+        <div className="flex md:flex-row flex-col gap-[50px] items-start">
+          <div className="bg-slate-100  mt-[100px]">
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th>Desk</th>
+                  <th>Team</th>
+                  <th>update</th>
+                  <th>delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamData.map((team, index) => {
+                  const updateTeam = async () => {
+                    if (updatedTeamName === "")
+                      return alert("Team name cannot be empty");
+                    const token = Cookies.get("token");
+                    setLoading(true);
+                    try {
+                      await axios
+                        .put(
+                          `https://aarambh-server.onrender.com/api/admin/team/${team.deskNumber}`,
+                          {
+                            teamName: updatedTeamName,
+                            deskNumber: team.deskNumber,
                           },
-                        }
-                      )
-                      .then((res) => {
-                        console.log(res);
-                        alert("Team updated successfully");
-                        window.location.reload();
-                      })
-                      .catch((err) => {
-                        alert(err.response.data.message);
-                        if (err.response.status === 401) {
-                          Cookies.remove("token");
-                          router.push("/login");
-                        }
-                      });
-                  } catch (err) {
-                    console.error(err);
-                  } finally {
-                    setLoading(false);
-                  }
-                };
-                const deleteTeam = async () => {
-                  const token = Cookies.get("token");
-                  setLoading(true);
-                  try {
-                    await axios
-                      .delete(
-                        `https://aarambh-server.onrender.com/api/admin/team/${team.deskNumber}`,
-                        {
-                          headers: {
-                            Authorization: `Bearer ${token}`,
-                          },
-                        }
-                      )
-                      .then((res) => {
-                        console.log(res);
-                        alert("Team deleted successfully");
-                        window.location.reload();
-                      })
-                      .catch((err) => {
-                        alert(err.response.data.message);
-                        if (err.response.status === 401) {
-                          Cookies.remove("token");
-                          router.push("/login");
-                        }
-                      });
-                  } catch (err) {
-                    console.error(err);
-                  } finally {
-                    setLoading(false);
-                  }
-                };
-                return (
-                  <tr key={index}>
-                    <td>{team.deskNumber}</td>
-                    <td>
-                      <input
-                        className="w-[150px]"
-                        type="text"
-                        defaultValue={team.teamName}
-                        onChange={(e: any) => {
-                          setUpdatedTeamName(e.target.value);
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        onClick={updateTeam}
-                        className="bg-blue-500 text-white p-1 rounded-md">
-                        Update
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        onClick={deleteTeam}
-                        className="bg-red-500 text-white p-1 rounded-md">
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {/* <div className="bg-slate-100 mt-[100px]">
+                          {
+                            headers: {
+                              Authorization: `Bearer ${token}`,
+                            },
+                          }
+                        )
+                        .then((res) => {
+                          console.log(res);
+                          alert("Team updated successfully");
+                          window.location.reload();
+                        })
+                        .catch((err) => {
+                          alert(err.response.data.message);
+                          if (err.response.status === 401) {
+                            Cookies.remove("token");
+                            router.push("/login");
+                          }
+                        });
+                    } catch (err) {
+                      console.error(err);
+                    } finally {
+                      setLoading(false);
+                    }
+                  };
+                  const deleteTeam = async () => {
+                    const token = Cookies.get("token");
+                    setLoading(true);
+                    try {
+                      await axios
+                        .delete(
+                          `https://aarambh-server.onrender.com/api/admin/team/${team.deskNumber}`,
+                          {
+                            headers: {
+                              Authorization: `Bearer ${token}`,
+                            },
+                          }
+                        )
+                        .then((res) => {
+                          console.log(res);
+                          alert("Team deleted successfully");
+                          window.location.reload();
+                        })
+                        .catch((err) => {
+                          alert(err.response.data.message);
+                          if (err.response.status === 401) {
+                            Cookies.remove("token");
+                            router.push("/login");
+                          }
+                        });
+                    } catch (err) {
+                      console.error(err);
+                    } finally {
+                      setLoading(false);
+                    }
+                  };
+                  return (
+                    <tr key={index}>
+                      <td>{team.deskNumber}</td>
+                      <td>
+                        <input
+                          className="w-[150px]"
+                          type="text"
+                          defaultValue={team.teamName}
+                          onChange={(e: any) => {
+                            setUpdatedTeamName(e.target.value);
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          onClick={updateTeam}
+                          className="bg-blue-500 text-white p-1 rounded-md">
+                          Update
+                        </button>
+                      </td>
+                      <td>
+                        <button
+                          onClick={deleteTeam}
+                          className="bg-red-500 text-white p-1 rounded-md">
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {/* <div className="bg-slate-100 mt-[100px]">
           <div className="bg-slate-100">
             <table className="w-full">
               <thead>
@@ -319,7 +328,10 @@ const Page = () => {
             </table>
           </div>
         </div> */}
-      </div>
+        </div>
+      ) : (
+        <Aarambh />
+      )}
     </div>
   );
 };
